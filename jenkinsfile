@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    environment {
+
+        dockerImage = 'dan'
+        registry = 'danialkarim807/tomcatesamplewebapp'
+        BUILD_NUMBER = "2" 
+
+    }
+    stages {
+        stage('Build Application') {
+            steps {
+                sh 'mvn -f pom.xml clean package'
+            }
+            post {
+                success {
+                    echo "Archiving the artifacts..."
+                    archiveArtifacts artifacts: '**/*.war'
+                }
+            }
+        }
+                stage('Create tomcat docker image') {
+            steps {
+                sh "pwd"
+                sh "ls -a"
+                sh "docker build . -t ${registry}:${env.BUILD_ID}"
+
+            }
+        }
+    }
+}
+
+
